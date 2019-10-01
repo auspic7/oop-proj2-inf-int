@@ -3,4 +3,4 @@ project(proj2)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(proj2 main.cpp)
+add_executable(proj2 main.cpp inf_int.cpp inf_int.h)
