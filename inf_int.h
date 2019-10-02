@@ -6,6 +6,7 @@
 #define PROJ2_INF_INT_H
 
 #include <iostream>
+using namespace std;
 
 class inf_int
 {
