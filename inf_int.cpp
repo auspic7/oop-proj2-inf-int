@@ -3,7 +3,6 @@
 //
 
 #include "inf_int.h"
-#include <cstdlib>
 
 /*
  * operator ==
@@ -26,28 +25,52 @@ bool operator==(const inf_int& a , const inf_int& b)
  * param: integer value
  */
 inf_int::inf_int(int value) {
+    length = 0;
+    digits = (char *)malloc(sizeof(char) * 11);
     thesign = value >= 0; // set sign
     value = abs(value); // set value to positive integer
 
     int i = 0;
     do{
-        digits[i] = '0' + (char)(value%10);
-        value = value/10;
+        digits[i++] = '0' + (char)(value%10); // save the digit to the field
+        value = value/10; // load the next digit
+        length++; // count length
     }
     while(value > 0);
-
 }
 
 /*
  * operator << for ostream
  * implemented by Myeongwon Choi
- * return output stream
+ * return output stream which prints out the number
  */
 ostream &operator<<(ostream & os, const inf_int & value) {
-    for (int i = 0; i < value.length; i++){
-
+    std::string s;
+    for (int i = value.length -1; i >= 0; i--){
+        s += value.digits[i];
     }
-    os << value.thesign?"":"-" << ;
+    os << (value.thesign?"":"-") << s;
+
     return os;
 }
+
+/*
+ * destructor
+ * implemented by Myeongwon Choi
+ * make dynamically allocated memory space free
+ */
+inf_int::~inf_int() {
+    free(digits);
+}
+
+/*
+ * default constructor
+ * implemented by Myeongwon Choi
+ * set value and the sign to zero
+ * param: none
+ */
+inf_int::inf_int() {
+    inf_int(0);
+}
+
 
