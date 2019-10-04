@@ -7,7 +7,7 @@
 /*
  * operator ==
  * implemented by oop class default
- * returns whether or not both are different
+ * returns whether or not both are equal
  * operands: two infinite integer
  * return value: true if they are identical, false if they are different
  */
@@ -72,8 +72,28 @@ inf_int::~inf_int() {
  */
 inf_int::inf_int() : inf_int(0) {}
 
+/*
+ * operator !=
+ * implemented by oop Myeongwon Choi
+ * returns whether or not both are different
+ * operands: two infinite integer
+ * return value: false if they are identical, true if they are different
+ */
 bool operator!=(const inf_int &a, const inf_int &b) {
     return a!=b;
+}
+
+/*
+ * copy constructor
+ * implemented by Myeongwon Choi
+ * set value and the sign with existing instance
+ * param: one infinite integer
+ */
+inf_int::inf_int(const inf_int & existing) {
+    length = existing.length;
+    thesign = existing.thesign;
+    digits = (char *)malloc(sizeof(char) * existing.length + 1);
+    strcpy(digits, existing.digits);
 }
 
 

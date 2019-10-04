@@ -8,8 +8,9 @@ using namespace std;
 
 int main()
 {
-    inf_int a(100), b(0), d;
-    cout << b << d;
+    inf_int a(100), b(0), d, c(a);
+
+    cout << b << d << c;
     /*
     inf_int a, e;
     inf_int b(100);
