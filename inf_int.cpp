@@ -37,6 +37,7 @@ inf_int::inf_int(int value) {
         length++; // count length
     }
     while(value > 0);
+    digits[i] = 0;
 }
 
 /*
@@ -69,8 +70,10 @@ inf_int::~inf_int() {
  * set value and the sign to zero
  * param: none
  */
-inf_int::inf_int() {
-    inf_int(0);
+inf_int::inf_int() : inf_int(0) {}
+
+bool operator!=(const inf_int &a, const inf_int &b) {
+    return a!=b;
 }
 
 
