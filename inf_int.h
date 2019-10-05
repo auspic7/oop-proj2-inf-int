@@ -39,6 +39,8 @@ public :
 
     friend ostream& operator<<(ostream& , const inf_int&);
     // friend istream& operator>>(istream& , inf_int&);    // not required
+
+    friend inf_int abs(const inf_int &);
 };
 
 #endif //PROJ2_INF_INT_H
