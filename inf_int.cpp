@@ -46,11 +46,10 @@ inf_int::inf_int(int value) {
  * return output stream which prints out the number
  */
 ostream &operator<<(ostream & os, const inf_int & value) {
-    std::string s;
+    os << (value.thesign?"":"-");
     for (int i = value.length -1; i >= 0; i--){
-        s += value.digits[i];
+        os << value.digits[i];
     }
-    os << (value.thesign?"":"-") << s;
 
     return os;
 }
@@ -90,10 +89,23 @@ bool operator!=(const inf_int &a, const inf_int &b) {
  * param: one infinite integer
  */
 inf_int::inf_int(const inf_int & existing) {
-    length = existing.length;
-    thesign = existing.thesign;
-    digits = (char *)malloc(sizeof(char) * existing.length + 1);
-    strcpy(digits, existing.digits);
+    *this = existing;
 }
+
+/*
+ * assignment operator =
+ * implemented by Myeongwon Choi
+ * assign right-hand value to left-hand value
+ * lvalue: infinite integer to replace
+ * rvalue: infinite integer to assign
+ */
+inf_int &inf_int::operator=(const inf_int & assignment) {
+    length = assignment.length;
+    thesign = assignment.thesign;
+    digits = (char *)malloc(sizeof(char) * assignment.length + 1);
+    strcpy(digits, assignment.digits);
+    return *this;
+}
+
 
 
