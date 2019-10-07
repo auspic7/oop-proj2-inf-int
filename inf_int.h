@@ -20,7 +20,7 @@ private :
 
 public :
     inf_int();               // assign 0 as a default value
-    explicit inf_int(int);
+    inf_int(int);
     inf_int(const char* );
     inf_int(const inf_int&); // copy constructor
     ~inf_int(); // destructor

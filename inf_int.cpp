@@ -11,11 +11,11 @@
  * parameter: one infinite integer
  * return value: positive-signed infinite integer
  */
-friend inf_int abs(const inf_int &a) {
-    inf_int res(a);
-    res.thesign = true;
-    return res;
-}
+//friend inf_int abs(const inf_int &a) {
+//    inf_int res(a);
+//    res.thesign = true;
+//    return res;
+//}
 
 /*
  * operator ==
@@ -152,36 +152,36 @@ bool operator<(const inf_int &a, const inf_int &b) {
 }
 
 //TODO: finish implementation
-inf_int operator+(const inf_int &a, const inf_int &b) {
-    inf_int result;
-
-    //determine the sign
-    if (a.thesign) {
-        if (b.thesign) result.thesign = true;
-        else result.thesign = abs(a) > abs(b);
-    } else {
-        if (b.thesign) result.thesign = abs(a) < abs(b);
-        else result.thesign = false;
-    }
-
-    int minLen, maxLen;
-    if (a.length < b.length) {
-        minLen = a.length;
-        maxLen = b.length;
-    } else {
-        maxLen = a.length;
-        minLen = b.length;
-    }
-
-    int carry = 0;
-    for (int i = 0; i < minLen; ++i) {
-        carry += a.digits[i] + b.digits[i] - '0' * 2;
-        result.digits[i] = static_cast<char>('0' + carry % 10);
-        carry /= 10;
-    }
-
-
-    for (int j =; j < (a.length > b.length ? a.length : b.length); ++j) {
-
-    }
-}
+//inf_int operator+(const inf_int &a, const inf_int &b) {
+//    inf_int result;
+//
+//    //determine the sign
+//    if (a.thesign) {
+//        if (b.thesign) result.thesign = true;
+//        else result.thesign = abs(a) > abs(b);
+//    } else {
+//        if (b.thesign) result.thesign = abs(a) < abs(b);
+//        else result.thesign = false;
+//    }
+//
+//    int minLen, maxLen;
+//    if (a.length < b.length) {
+//        minLen = a.length;
+//        maxLen = b.length;
+//    } else {
+//        maxLen = a.length;
+//        minLen = b.length;
+//    }
+//
+//    int carry = 0;
+//    for (int i = 0; i < minLen; ++i) {
+//        carry += a.digits[i] + b.digits[i] - '0' * 2;
+//        result.digits[i] = static_cast<char>('0' + carry % 10);
+//        carry /= 10;
+//    }
+//
+//
+//    for (int j =; j < (a.length > b.length ? a.length : b.length); ++j) {
+//
+//    }
+//}
