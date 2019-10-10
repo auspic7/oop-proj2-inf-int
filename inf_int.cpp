@@ -53,15 +53,16 @@ inf_int::inf_int(int value) {
 
 /*
  * operator << for ostream
- * implemented by Myeongwon Choi
+ * implemented by Seungjin Lee
  * return output stream which prints out the number
  */
-ostream &operator<<(ostream &os, const inf_int &value) {
-    os << (value.thesign ? "" : "-");
-    for (int i = value.length - 1; i >= 0; i--) {
-        os << value.digits[i];
-    }
+ostream& operator<<(ostream &os, const inf_int &result) {
 
+    // if thesign is true(positive-#) "" will print,
+    // thesign is false(negative-#) "-" will print.
+    if(result.thesign == false)
+        os << '-';
+    os << result.digits;
     return os;
 }
 

@@ -8,10 +8,10 @@ using namespace std;
 
 int main()
 {
-    inf_int a(1000000000), b(30), c(-1), d(10);
+//    inf_int a(1000000000), b(30), c(-1), d(10);
+//
+//    cout << (a > b) << (b > d) << (a > c) << endl << a * b;
 
-    cout << (a > b) << (b > d) << (a > c) << endl << a * b;
-    /*
     inf_int a, e;
     inf_int b(100);
     inf_int c("321111111111122222222222233333333333444444444445555555555");
@@ -21,7 +21,7 @@ int main()
 
     // cin >> g ;   // not required
 
-    a=b*c;
+    // a=b*c;
     // e=g/f;       // not required
 
     b=c-d;
@@ -36,7 +36,6 @@ int main()
         cout << "f : " << f << endl;
         // cout << "g : " << g << endl;
     }
-     */
 
     return 0;
 }
