@@ -165,22 +165,50 @@ inf_int operator+(const inf_int &a, const inf_int &b) {
     }
 
     int maxLen = (a.length > b.length) ? a.length : b.length;
+    result.digits = (char *) malloc(sizeof(char) * maxLen + 1);
     int carry = 0, aDigit = 0, bDigit = 0, i = 0;
 
     for (i = 0; i < maxLen; ++i) {
         if (a.length > i) aDigit = a.digits[i] - '0';
+        else aDigit = 0;
         if (b.length > i) bDigit = b.digits[i] - '0';
+        else bDigit = 0;
         carry += aDigit + bDigit;
         result.digits[i] = static_cast<char>('0' + carry % 10);
         carry /= 10;
     }
-
+    if (carry) result.digits[i++] = static_cast<char>('0' + carry % 10);
     result.digits[i] = 0;
     result.length = i;
 
     return result;
 }
 
-inf_int operator-(const inf_int &, const inf_int &) {
+inf_int operator-(const inf_int &a, const inf_int &b) {
+    inf_int result;
+    int maxLen = (a.length > b.length) ? a.length : b.length;
+    if (abs(a) > abs(b)) {
+        for (int i = 0; i < maxLen; i++) {
+
+        }
+    }
     return inf_int();
+}
+
+inf_int operator*(const inf_int &a, const inf_int &b) {
+    inf_int result, i, temp;
+    if (a > b) {
+        while (i < b) {
+            result = result + a;
+            i = i + 1;
+        }
+    } else {
+        while (i < a) {
+            result = result + b;
+            i = i + 1;
+        }
+    }
+
+    result.thesign = a.thesign == b.thesign;
+    return result;
 }
