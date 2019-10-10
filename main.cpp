@@ -8,9 +8,9 @@ using namespace std;
 
 int main()
 {
-    inf_int a(100), b(101), c(-1), d(-10);
+    inf_int a(1000000000), b(30), c(-1), d(10);
 
-    cout << (a > b) << (c > d) << (a > c) << endl << a * b;
+    cout << (a > b) << (b > d) << (a > c) << endl << a * b;
     /*
     inf_int a, e;
     inf_int b(100);

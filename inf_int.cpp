@@ -133,7 +133,7 @@ bool operator>(const inf_int &a, const inf_int &b) {
     } else { //sign, length equal
         for (int i = a.length - 1; i >= 0; i--) {
             if (a.digits[i] != b.digits[i]) {
-                flag = a.digits > b.digits;
+                flag = a.digits[i] > b.digits[i];
                 break;
             }
         }
