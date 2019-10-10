@@ -83,6 +83,59 @@ inf_int::~inf_int() {
 inf_int::inf_int() : inf_int(0) {}
 
 /*
+ * constructor
+ * implemented by Seungjin Lee
+ * set value if input is char pointer param
+ * param : const char*
+ */
+inf_int::inf_int(const char* tmp) {
+
+    int cnt = 0;
+    // if tmp has no value
+    if ((int)strlen(tmp) == 1 && tmp[0]== '0') {
+        digits = new char[1];
+        digits[0] = '0';
+        digits[1] = '\0';
+    }
+        // if tmp sign is negative
+    else if(tmp[0] == '-') {
+        thesign = false;
+        cnt = 1;
+        for (int i = 1; ;i++) {
+            if(tmp[i] != '0') break;
+            cnt++;
+        }
+
+        digits = new char[(int)strlen(tmp) - cnt];
+        for (int i = 0; i<(int)strlen(tmp) - cnt; i++) {
+            digits[i] = tmp[i+cnt];
+        }
+        // rightmost index must be NULL
+        digits[(int)strlen(tmp) - cnt] = '\0';
+        length = (int)strlen(digits);
+    } // if tmp sign is positive
+    else {
+        thesign = true;
+        for (int i = 1; ;i++) {
+            if(tmp[i] != '0') break;
+            cnt++;
+        }
+        digits = new char[(int)strlen(tmp) - cnt];
+        int j = 0;
+        for (int i = (int)strlen(tmp)-cnt; i>0; i--) {
+            digits[j] = tmp[i];
+        }
+        for (int i = 0; i<(int)strlen(tmp) - cnt; i++) {
+            digits[i] = tmp[i+cnt];
+        }
+        // rightmost index must be NULL
+        digits[(int)strlen(tmp) - cnt] = '\0';
+        length = (int)strlen(digits);
+    }
+}
+
+
+/*
  * operator !=
  * implemented by oop Myeongwon Choi
  * returns whether or not both are different
@@ -151,48 +204,320 @@ bool operator<(const inf_int &a, const inf_int &b) {
     return !(a > b);
 }
 
-//TODO: finish implementation
+/*
+ * addition operator +
+ * implemented by Seungjin Lee
+ * add two values
+ */
 inf_int operator+(const inf_int &a, const inf_int &b) {
-    inf_int result;
+    // if thesign is same
+    char *high, *low, *tmp, *final;
+    int max_i, min_j, carry, temp, len, findex;
 
-    //determine the sign
-    if (a.thesign) {
-        if (b.thesign) result.thesign = true;
-        else result.thesign = abs(a) > abs(b);
-    } else {
-        if (b.thesign) result.thesign = abs(a) < abs(b);
-        else result.thesign = false;
+    // if the two value has the same sign
+    // -,- or +,+
+    if(a.thesign == b.thesign) {
+        // 길이가 긴 것을 찾기
+        if(a.length < b.length) {
+            high = new char[(int)strlen(b.digits)];
+            low = new char[(int)strlen(a.digits)];
+            strcpy(high, b.digits);
+            strcpy(low, a.digits);
+            max_i = b.length-1;
+            min_j = a.length-1;
+        }else{
+            high = new char[(int)strlen(a.digits)];
+            low = new char[(int)strlen(b.digits)];
+            strcpy(high,a.digits);
+            strcpy(low,b.digits);
+            max_i = a.length - 1;
+            min_j = b.length - 1;
+        }
+        // when we add two value, store result in tmp temporary.
+        tmp = new char[(int)strlen(high)];
+        carry = 0;
+        // addition two a, b in min_j length
+        // temp is variable that store the result
+        // ex : a = 123, b = 4567,
+        while(true) {
+            // when we add a = 123, b = 4567
+            temp = ((int)(high[max_i] - '0') + (int)(low[min_j] - '0'));
+            // 1 iteration, a[2 = min_j] (3) + b[3 = max_i] (7) = 10
+            temp = temp + carry; // 10 + 0
+            if (temp >= 10) {
+                carry = 1;
+                temp %= 10; // temp = 0
+            } else {
+                carry = 0;
+            }
+            tmp[max_i] = temp + '0';
+            // tmp[max_i = 3] = 0 is stored.
+            max_i--;
+            min_j--;
+            if(min_j < 0) {
+                break;
+            }
+        }
+
+        // 남은 자리 숫자 더하기
+        for( ; max_i >=0; max_i--) {
+            temp = (int)(high[max_i] - '0') + carry;
+            if (temp >= 10) {
+                carry = 1;
+                temp = temp % 10; // temp = 0
+            } else {
+                carry = 0;
+            }
+            tmp[max_i] = temp + '0';
+        }
+        tmp[(int)strlen(high)] = '\0';
+
+        // if carry is left. 즉, 마지막까지 올림자리가 남은 경우
+        if (carry != 0 ) {
+            // if a and b are positive
+            if (a.thesign && b.thesign) {
+                len = (int) strlen(tmp) + 1;
+                findex = 1;
+                final = new char[len];
+                final[0] = carry + '0';
+                for (int k = findex; k < len; k++) {
+                    final[k] = tmp[k - 1];
+                }
+            }
+                // a and b are negative
+            else if (!a.thesign && !b.thesign) {
+                len = (int) strlen(tmp) + 2;
+                findex = 2;
+                final = new char[len];
+                final[0] = '-';
+                final[1] = carry + '0';
+                for (int k = findex; k < len; k++) {
+                    final[k] = tmp[k - 1];
+                }
+            }
+        }else{
+            if(a.thesign && b.thesign){ // 둘다 양수라면
+                len = (int)strlen(tmp);
+                findex = 0;
+                final = new char[len];
+                for(int k = findex ; k < len ; k++) {
+                    final[k] = tmp[k];
+                }
+            }else if(!a.thesign && !b.thesign){ // 둘다 음수라면
+                len = (int)strlen(tmp) + 2;
+                findex = 1;
+                final = new char[len];
+                final[0] = '-'; // 부호 할당
+                for(int k = findex ; k < len ; k++) {
+                    final[k] = tmp[k-1];
+                }
+            }
+        }
+        final[len] = '\0';
+        inf_int result(final);
+        return result;
     }
+        // if two arg sign is different
+    else {
+        bool sign = true;
+        // result sign
+        // if two arg digits are same and sign is different each other
+        // return 0
+        if (!strcmp(a.digits, b.digits)) {
+            inf_int result(0);
+            return result;
+        }
+        // if b has negative sign
+        if (!b.thesign) {
+            if (a.length > b.length) {
+                sign = true;
+            } else if (a.length < b.length) {
+                sign = false;
+            } else {
+                for (int i = 0; i < a.length; i++) {
+                    if ((a.digits[i] - '0') > (b.digits[i] - '0')) {
+                        sign = true;
+                        break;
+                    } else if ((a.digits[i] - '0') < (b.digits[i] - '0')) {
+                        sign = false;
+                        break;
+                    }
+                }
+            }
+            // if sign is true, a is bigger than b
+            if (sign) {
+                high = new char[(int) strlen(a.digits)];
+                low = new char[(int) strlen(b.digits)];
+                strcpy(high, a.digits);
+                strcpy(low, b.digits);
+                max_i = a.length - 1;
+                min_j = b.length - 1;
+            } else {
+                high = new char[(int) strlen(b.digits)];
+                low = new char[(int) strlen(a.digits)];
+                strcpy(high, b.digits);
+                strcpy(low, a.digits);
+                max_i = b.length - 1;
+                min_j = a.length - 1;
+            }
+        }
+            // if a has negative sign
+        else {
+            if (a.length > b.length) {
+                sign = false;
+            } else if (a.length < b.length) {
+                sign = true;
+            } else {
+                for (int i = 0; i < a.length; i++) {
+                    if ((a.digits[i] - '0') > (b.digits[i] - '0')) {
+                        sign = false;
+                        break;
+                    } else if ((a.digits[i] - '0') < (b.digits[i] - '0')) {
+                        sign = true;
+                        break;
+                    }
+                }
+            }
+            // if sign is true, b is bigger than a
+            if (sign) {
+                high = new char[(int) strlen(b.digits)];
+                low = new char[(int) strlen(a.digits)];
+                strcpy(high, b.digits);
+                strcpy(low, a.digits);
+                max_i = b.length - 1;
+                min_j = a.length - 1;
+            } else {
+                high = new char[(int) strlen(a.digits)];
+                low = new char[(int) strlen(b.digits)];
+                strcpy(high, a.digits);
+                strcpy(low, b.digits);
+                max_i = a.length - 1;
+                min_j = b.length - 1;
+            }
+        }
+        tmp = new char[(int)strlen(high)];
+        carry = 0;
+        while (1) {
+            // when we add a = 123, b = 4567
+            temp = ((int)(high[max_i] - '0') - (int)(low[min_j] - '0'));
+            // 1 iteration, a[2 = min_j] (3) + b[3 = max_i] (7) = 10
+            temp = temp - carry; // 10 + 0
+            if (temp < 0) {
+                carry = 1;
+                temp = temp + 10; // temp = 0
+            } else {
+                carry = 0;
+            }
+            tmp[max_i] = temp + '0';
+            // tmp[max_i = 3] = 0 is stored.
+            max_i--;
+            min_j--;
+            if (min_j < 0) {
+                break;
+            }
+        }
 
-    int maxLen = (a.length > b.length) ? a.length : b.length;
-    result.digits = (char *) malloc(sizeof(char) * maxLen + 1);
-    int carry = 0, aDigit = 0, bDigit = 0, i = 0;
+        // 남은 자리 숫자 더하기
+        for (; max_i >= 0; max_i--) {
+            temp = (int) (high[max_i] - '0') + carry;
+            if (temp < 0) {
+                carry = 1;
+                temp = temp + 10; // temp = 0
+            } else {
+                carry = 0;
+            }
+            tmp[max_i] = temp + '0';
+        }
+        tmp[max_i] = '\0';
 
-    for (i = 0; i < maxLen; ++i) {
-        if (a.length > i) aDigit = a.digits[i] - '0';
-        else aDigit = 0;
-        if (b.length > i) bDigit = b.digits[i] - '0';
-        else bDigit = 0;
-        carry += aDigit + bDigit;
-        result.digits[i] = static_cast<char>('0' + carry % 10);
-        carry /= 10;
+        // if carry is left. 즉, 마지막까지 올림자리가 남은 경우
+        if (tmp[0] == '0') {
+            // if a and b are positive
+            if (!sign) {
+                len = (int) strlen(tmp);
+                final = new char[len];
+                final[0] = '-';
+                for (int k = 1; k < len; k++) {
+                    final[k] = tmp[k];
+                }
+            }
+        } else {
+            if (!sign) {
+                len = (int) strlen(tmp) + 1;
+                final = new char[len];
+                final[0] = '-';
+                for (int k = 1; k < len; k++) {
+                    final[k] = tmp[k - 1];
+                }
+            } else {
+                len = (int) strlen(tmp);
+                final = new char[len];
+                for (int k = 0; k < len; k++) {
+                    final[k] = tmp[k];
+                }
+            }
+        }
+        final[len] = '\0';
+        inf_int result(final);
+        return result;
     }
-    if (carry) result.digits[i++] = static_cast<char>('0' + carry % 10);
-    result.digits[i] = 0;
-    result.length = i;
-
-    return result;
 }
 
+/*
+ * subtraction operator -
+ * implemented by Seungjin Lee
+ * subtract two values
+ * using operator +
+ */
 inf_int operator-(const inf_int &a, const inf_int &b) {
-    inf_int result;
-    int maxLen = (a.length > b.length) ? a.length : b.length;
-    if (abs(a) > abs(b)) {
-        for (int i = 0; i < maxLen; i++) {
+    char *tmp, *result;
 
+    // if sign is different, longer value change the sign and add
+    if(a.thesign != b.thesign) {
+        // sign is different, digits are same.
+        // ex a = 1234, b = -1234
+        if(!strcmp(a.digits, b.digits)) {
+            inf_int result(0);
+            return result;
+        }
+        // 양수라고 생각하고 더하고, 맨앞에 부호만 붙이면 됨.
+        if(!b.thesign) {
+            // b's sign is negative (a's sign is positive), negate and add.
+            inf_int result(b.digits);
+            return a+result;
+        } else {
+            // b's sign is positive so, a's sign is negative,
+            // result must be negative.
+            // else means b.thesign is positive. so, neg - pos should be neg.
+            tmp = new char[b.length+1];
+            tmp[0] = '-';
+            for (int i = 1; i<b.length + 1; i++) {
+                tmp[i] = b.digits[i-1];
+            }
+            tmp[b.length+1] = '\0';
+            inf_int result(tmp);
+            return a+result;
+        }
+    }else {
+        // the sign is same. negate b's sign and add.
+        if(!b.thesign) {
+            // b's sign is negative, a's sign is negative.
+            // neg - neg, so b's sign will change in positive.
+            inf_int result(b.digits);
+            return a+result;
+        } else {
+            // a, b sign is positive.
+            // pos - pos so, negate b's sign and add.
+            tmp = new char[b.length+1];
+            tmp[0] = '-';
+            for (int i = 1; i<=b.length; i++) {
+                tmp[i] = b.digits[i-1];
+            }
+            tmp[b.length+1] = '\0';
+            inf_int result(tmp);
+            return a+result;
         }
     }
-    return inf_int();
 }
 
 inf_int operator*(const inf_int &a, const inf_int &b) {
