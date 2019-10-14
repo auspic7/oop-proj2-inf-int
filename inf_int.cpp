@@ -151,7 +151,13 @@ bool operator<(const inf_int &a, const inf_int &b) {
     return !(a > b);
 }
 
-//TODO: finish implementation
+/*
+ * operator +
+ * implemented by oop class default
+ * returns added value of two variables
+ * operands: two infinite integer
+ * return value: one infinite integer which is sum
+ */
 inf_int operator+(const inf_int &a, const inf_int &b) {
     inf_int c;
     unsigned int i;
@@ -246,7 +252,7 @@ inf_int operator*(const inf_int &a, const inf_int &b) {
     unsigned int i, j, k;
     c.length = a.length + b.length;
     c.digits = (char *) realloc(c.digits, c.length + 1);
-    c.digits[c.length] = '\0';
+    c.digits[c.length] = 0;
 
     for (i = 0; i < c.length; i++) {
         c.digits[i] = 0;
@@ -258,10 +264,7 @@ inf_int operator*(const inf_int &a, const inf_int &b) {
             c.Mul(a.digits[i], b.digits[j], k + 1);
         }
     }
-    if (a.thesign == b.thesign) {
-        c.thesign = true;
-    } else
-        c.thesign = false;
+    c.thesign = a.thesign == b.thesign;
 
     for (i = 0; i < c.length; i++) {
         c.digits[i] += '0';
@@ -270,7 +273,7 @@ inf_int operator*(const inf_int &a, const inf_int &b) {
     if (c.length > 1 && c.digits[c.length - 1] == '0') {
         d.digits = (char *) realloc(d.digits, c.length);
         d.length = c.length - 1;
-        d.digits[d.length] = '\0';
+        d.digits[d.length] = 0;
         for (i = 0; i < c.length; i++) {
             d.digits[i] = 0;
         }
@@ -281,8 +284,6 @@ inf_int operator*(const inf_int &a, const inf_int &b) {
         return d;
     } else
         return c;
-
-
 }
 
 
@@ -291,15 +292,10 @@ void inf_int::Add(const char num,
 {
     if (this->length < index) {
         this->digits = (char *) realloc(this->digits, index + 1);
+        assert(this->digits); // memory allocation check
 
-        if (this->digits == NULL) {      // 할당 실패 예외처리
-            cout << "Memory reallocation failed, the program will terminate." << endl;
-
-            exit(0);
-        }
-
-        this->length = index;               // 길이 지정
-        this->digits[this->length] = '\0';   // 널문자 삽입
+        this->length = index;               // set length
+        this->digits[this->length] = 0;   // set end of string
     }
 
     if (this->digits[index - 1] < '0') {   // 연산 전에 '0'보다 작은 아스키값인 경우 0으로 채움. 쓰여지지 않았던 새로운 자리수일 경우 발생
@@ -316,7 +312,6 @@ void inf_int::Add(const char num,
 }
 
 void inf_int::Sub(const char num, const unsigned int index) {
-
     this->digits[index - 1] -= num - '0';
 
     if (this->digits[index - 1] < '0') {
@@ -326,7 +321,6 @@ void inf_int::Sub(const char num, const unsigned int index) {
 }
 
 void inf_int::Mul(const char a, const char b, const unsigned int index) {
-
     this->digits[index - 1] += (a - '0') * (b - '0');
     if (this->digits[index - 1] > 9) {
         this->digits[index] += this->digits[index - 1] / 10;
