@@ -153,62 +153,214 @@ bool operator<(const inf_int &a, const inf_int &b) {
 
 //TODO: finish implementation
 inf_int operator+(const inf_int &a, const inf_int &b) {
-    inf_int result;
+    inf_int c;
+    unsigned int i;
 
-    //determine the sign
-    if (a.thesign) {
-        if (b.thesign) result.thesign = true;
-        else result.thesign = abs(a) > abs(b);
-    } else {
-        if (b.thesign) result.thesign = abs(a) < abs(b);
-        else result.thesign = false;
+    if (a.thesign == b.thesign) {   // 이항의 부호가 같을 경우 + 연산자로 연산
+        for (i = 0; i < a.length; i++) {
+            c.Add(a.digits[i], i + 1);
+        }
+        for (i = 0; i < b.length; i++) {
+            c.Add(b.digits[i], i + 1);
+        }
+
+        c.thesign = a.thesign;
+
+        return c;
+    } else {   // 이항의 부호가 다를 경우 - 연산자로 연산
+        c = b;
+        c.thesign = a.thesign;
+
+        return a - c;
     }
-
-    int maxLen = (a.length > b.length) ? a.length : b.length;
-    result.digits = (char *) malloc(sizeof(char) * maxLen + 1);
-    int carry = 0, aDigit = 0, bDigit = 0, i = 0;
-
-    for (i = 0; i < maxLen; ++i) {
-        if (a.length > i) aDigit = a.digits[i] - '0';
-        else aDigit = 0;
-        if (b.length > i) bDigit = b.digits[i] - '0';
-        else bDigit = 0;
-        carry += aDigit + bDigit;
-        result.digits[i] = static_cast<char>('0' + carry % 10);
-        carry /= 10;
-    }
-    if (carry) result.digits[i++] = static_cast<char>('0' + carry % 10);
-    result.digits[i] = 0;
-    result.length = i;
-
-    return result;
 }
+
 
 inf_int operator-(const inf_int &a, const inf_int &b) {
-    inf_int result;
-    int maxLen = (a.length > b.length) ? a.length : b.length;
-    if (abs(a) > abs(b)) {
-        for (int i = 0; i < maxLen; i++) {
+    inf_int c;
+    unsigned int i;
 
-        }
-    }
-    return inf_int();
-}
-
-inf_int operator*(const inf_int &a, const inf_int &b) {
-    inf_int result, i, temp;
     if (a > b) {
-        while (i < b) {
-            result = result + a;
-            i = i + 1;
+        if (a.thesign == b.thesign) {
+            if (a.thesign) {
+                for (i = 0; i < a.length; i++) {
+                    c.Add(a.digits[i], i + 1);
+                }
+                for (i = 0; i < b.length; i++) {
+                    c.Sub(b.digits[i], i + 1);
+                }
+                c.thesign = true;
+                return c;
+            } else {
+                for (i = 0; i < b.length; i++) {
+                    c.Add(b.digits[i], i + 1);
+                }
+                for (i = 0; i < a.length; i++) {
+                    c.Sub(a.digits[i], i + 1);
+                }
+                c.thesign = true;
+                return c;
+            }
+        } else {
+            c = b;
+            c.thesign = a.thesign;
+            return a + c;
         }
     } else {
-        while (i < a) {
-            result = result + b;
-            i = i + 1;
+        if (a.thesign == b.thesign) {
+            if (a.thesign) {
+
+                for (i = 0; i < b.length; i++) {
+                    c.Add(b.digits[i], i + 1);
+                }
+                for (i = 0; i < a.length; i++) {
+                    c.Sub(a.digits[i], i + 1);
+                }
+                c.thesign = false;
+                return c;
+
+            } else {
+                for (i = 0; i < a.length; i++) {
+                    c.Add(a.digits[i], i + 1);
+                }
+                for (i = 0; i < b.length; i++) {
+                    c.Sub(b.digits[i], i + 1);
+                }
+                c.thesign = false;
+                return c;
+            }
+        } else {
+            c = b;
+            c.thesign = a.thesign;
+            return a + c;
+
         }
     }
-
-    result.thesign = a.thesign == b.thesign;
-    return result;
+    // to be filled
 }
+
+
+inf_int operator*(const inf_int &a, const inf_int &b) {
+    inf_int c;
+    inf_int d;
+    unsigned int i, j, k;
+    c.length = a.length + b.length;
+    c.digits = (char *) realloc(c.digits, c.length + 1);
+    c.digits[c.length] = '\0';
+
+    for (i = 0; i < c.length; i++) {
+        c.digits[i] = 0;
+    }
+
+    for (i = 0; i < a.length; i++) {
+        for (j = 0; j < b.length; j++) {
+            k = i + j;
+            c.Mul(a.digits[i], b.digits[j], k + 1);
+        }
+    }
+    if (a.thesign == b.thesign) {
+        c.thesign = true;
+    } else
+        c.thesign = false;
+
+    for (i = 0; i < c.length; i++) {
+        c.digits[i] += '0';
+    }
+
+    if (c.length > 1 && c.digits[c.length - 1] == '0') {
+        d.digits = (char *) realloc(d.digits, c.length);
+        d.length = c.length - 1;
+        d.digits[d.length] = '\0';
+        for (i = 0; i < c.length; i++) {
+            d.digits[i] = 0;
+        }
+        for (i = 0; i < d.length; i++) {
+            d.digits[i] += c.digits[i];
+        }
+        d.thesign = c.thesign;
+        return d;
+    } else
+        return c;
+
+
+}
+
+
+void inf_int::Add(const char num,
+                  const unsigned int index)   // a의 index 자리수에 n을 더한다. 0<=n<=9, ex) a가 391일때, Add(a, 2, 2)의 결과는 411
+{
+    if (this->length < index) {
+        this->digits = (char *) realloc(this->digits, index + 1);
+
+        if (this->digits == NULL) {      // 할당 실패 예외처리
+            cout << "Memory reallocation failed, the program will terminate." << endl;
+
+            exit(0);
+        }
+
+        this->length = index;               // 길이 지정
+        this->digits[this->length] = '\0';   // 널문자 삽입
+    }
+
+    if (this->digits[index - 1] < '0') {   // 연산 전에 '0'보다 작은 아스키값인 경우 0으로 채움. 쓰여지지 않았던 새로운 자리수일 경우 발생
+        this->digits[index - 1] = '0';
+    }
+
+    this->digits[index - 1] += num - '0';   // 값 연산
+
+
+    if (this->digits[index - 1] > '9') {   // 자리올림이 발생할 경우
+        this->digits[index - 1] -= 10;   // 현재 자릿수에서 (아스키값) 10을 빼고
+        Add('1', index + 1);         // 윗자리에 1을 더한다
+    }
+}
+
+void inf_int::Sub(const char num, const unsigned int index) {
+
+    this->digits[index - 1] -= num - '0';
+
+    if (this->digits[index - 1] < '0') {
+        this->digits[index - 1] += 10;
+        Sub('1', index + 1);
+    }
+}
+
+void inf_int::Mul(const char a, const char b, const unsigned int index) {
+
+    this->digits[index - 1] += (a - '0') * (b - '0');
+    if (this->digits[index - 1] > 9) {
+        this->digits[index] += this->digits[index - 1] / 10;
+        this->digits[index - 1] %= 10;
+    }
+
+}
+
+inf_int::inf_int(const char *str) {
+    if (str[0] == '-') {
+        this->thesign = false;
+        this->length = strlen(str) - 1;
+        this->digits = new char[length + 1];
+        for (int i = 0; i < length; i++) {
+            this->digits[i] = str[this->length - i];
+        }
+        this->digits[length] = '\0';
+    } else {
+        this->thesign = true;
+        if (str[0] == '+') {
+            this->length = strlen(str) - 1;
+            this->digits = new char[length + 1];
+            for (int i = 0; i < length; i++) {
+                this->digits[i] = str[this->length - i];
+            }
+            this->digits[length] = '\0';
+        } else {
+            this->length = strlen(str);
+            this->digits = new char[length + 1];
+            for (int i = 0; i < length; i++) {
+                this->digits[i] = str[this->length - 1 - i];
+            }
+            this->digits[length] = '\0';
+        }
+    }
+}
+

@@ -41,6 +41,12 @@ public :
     // friend istream& operator>>(istream& , inf_int&);    // not required
 
     friend inf_int abs(const inf_int &);
+
+    void Add(const char, const unsigned int);
+
+    void Sub(const char, const unsigned int);
+
+    void Mul(const char, const char, const unsigned int);
 };
 
 #endif //PROJ2_INF_INT_H
