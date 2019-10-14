@@ -183,94 +183,103 @@ inf_int operator+(const inf_int &a, const inf_int &b) {
 
 
 inf_int operator-(const inf_int &a, const inf_int &b) {
-    inf_int c;
+    inf_int bigger, smaller, result;
     unsigned int i;
-
     if (a > b) {
-        if (a.thesign == b.thesign) {
-            if (a.thesign) {
-                for (i = 0; i < a.length; i++) {
-                    c.Add(a.digits[i], i + 1);
-                }
-                for (i = 0; i < b.length; i++) {
-                    c.Sub(b.digits[i], i + 1);
-                }
-                c.thesign = true;
-                return c;
-            } else {
-                for (i = 0; i < b.length; i++) {
-                    c.Add(b.digits[i], i + 1);
-                }
-                for (i = 0; i < a.length; i++) {
-                    c.Sub(a.digits[i], i + 1);
-                }
-                c.thesign = true;
-                return c;
+        bigger = a;
+        smaller = b;
+    } else {
+        bigger = b;
+        smaller = a;
+    }
+
+    if (bigger.thesign == smaller.thesign) {
+        if (bigger.thesign) {
+            for (i = 0; i < bigger.length; i++) {
+                result.Add(bigger.digits[i], i + 1);
             }
+            for (i = 0; i < smaller.length; i++) {
+                result.Sub(smaller.digits[i], i + 1);
+            }
+            result.thesign = true;
         } else {
-            c = b;
-            c.thesign = a.thesign;
-            return a + c;
+            for (i = 0; i < smaller.length; i++) {
+                result.Add(smaller.digits[i], i + 1);
+            }
+            for (i = 0; i < bigger.length; i++) {
+                result.Sub(bigger.digits[i], i + 1);
+            }
+            result.thesign = true;
         }
     } else {
-        if (a.thesign == b.thesign) {
-            if (a.thesign) {
-
-                for (i = 0; i < b.length; i++) {
-                    c.Add(b.digits[i], i + 1);
-                }
-                for (i = 0; i < a.length; i++) {
-                    c.Sub(a.digits[i], i + 1);
-                }
-                c.thesign = false;
-                return c;
-
-            } else {
-                for (i = 0; i < a.length; i++) {
-                    c.Add(a.digits[i], i + 1);
-                }
-                for (i = 0; i < b.length; i++) {
-                    c.Sub(b.digits[i], i + 1);
-                }
-                c.thesign = false;
-                return c;
-            }
-        } else {
-            c = b;
-            c.thesign = a.thesign;
-            return a + c;
-
-        }
+        result = smaller;
+        result.thesign = bigger.thesign;
+        result = result + bigger;
     }
+
+    for (int j = strlen(result.digits) - 1; j >= 0; --j) {
+        if (result.digits[j] != '0') {
+            result.digits[j + 1] = 0;
+            break;
+        }
+        if (j == 0) result.digits[j + 1] = 0;
+    }
+    result.length = strlen(result.digits);
+    return result;
     // to be filled
 }
 
 
+/*
+ * multiplication operation
+ * implemented by Seungjin Lee
+ * multiply two inf_int parameters
+ */
 inf_int operator*(const inf_int &a, const inf_int &b) {
+    // 123 * 10 = 1230
+
     inf_int c;
     inf_int d;
     unsigned int i, j, k;
-    c.length = a.length + b.length;
+    int a_tmp = 0;
+    int b_tmp = 0;
+
+    for (int i = 0; i < a.length; i++) {
+        if (a.digits[i] == '0') a_tmp++;
+    }
+    for (int i = 0; i < b.length; i++) {
+        if (b.digits[i] == '0') b_tmp++;
+    }
+
+    if (a_tmp == a.length || b_tmp == b.length) return c;
+
+    c.length = a.length + b.length; // c.length = 5
     c.digits = (char *) realloc(c.digits, c.length + 1);
-    c.digits[c.length] = 0;
+    c.digits[c.length] = '\0'; // rightmost value must be \0
 
     for (i = 0; i < c.length; i++) {
         c.digits[i] = 0;
-    }
+    } // 일단 모든 자리를 0으로 채워놓음 c.digit = 00000
 
-    for (i = 0; i < a.length; i++) {
-        for (j = 0; j < b.length; j++) {
-            k = i + j;
-            c.Mul(a.digits[i], b.digits[j], k + 1);
+    for (i = 0; i < a.length; i++) { // 1
+        for (j = 0; j < b.length; j++) { // 1 0
+            k = i + j; // k = 0 1
+            c.Mul(a.digits[i], b.digits[j], k + 1); // mul(1,1,1) mul(1,0,2) -> 100 * 1
         }
     }
-    c.thesign = a.thesign == b.thesign;
+    if (a.thesign == b.thesign) { // if sign is same, sign must be positive.
+        c.thesign = true;
+    } else // if sign is different, sign must be negative.
+        c.thesign = false;
 
     for (i = 0; i < c.length; i++) {
-        c.digits[i] += '0';
+        c.digits[i] += '0'; // 0 + '0' = '0'
     }
 
     if (c.length > 1 && c.digits[c.length - 1] == '0') {
+        // result like this : 03210 -> index 4 '0' must be deleted.
+        // Reallocate variables
+
         d.digits = (char *) realloc(d.digits, c.length);
         d.length = c.length - 1;
         d.digits[d.length] = 0;
